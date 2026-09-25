@@ -334,13 +334,72 @@
     showScreen('results');
   }
 
+  // Builds the clickable, per-choice breakdown shown under each review card, so a
+  // participant can open any option (selected, correct, or neither) and read why
+  // that specific choice was right or wrong, instead of only a single summary line.
+  function renderReviewChoices(question, response) {
+    var list = document.createElement('ul');
+    list.className = 'review-choice-list';
+    var selectedIds = Array.isArray(response) ? response : [];
+
+    question.choices.forEach(function (choice) {
+      var isCorrectChoice = question.correctAnswers.indexOf(choice.id) !== -1;
+      var isSelected = selectedIds.indexOf(choice.id) !== -1;
+
+      var item = document.createElement('li');
+      item.className = 'review-choice' +
+        (isCorrectChoice ? ' review-choice-correct' : '') +
+        (isSelected && !isCorrectChoice ? ' review-choice-incorrect' : '');
+
+      var toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'review-choice-toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+
+      var label = document.createElement('span');
+      label.className = 'review-choice-label';
+      label.textContent = choice.text;
+      toggle.appendChild(label);
+
+      if (isCorrectChoice) {
+        var correctTag = document.createElement('span');
+        correctTag.className = 'review-choice-tag review-choice-tag-correct';
+        correctTag.textContent = 'Correct answer';
+        toggle.appendChild(correctTag);
+      }
+      if (isSelected) {
+        var selectedTag = document.createElement('span');
+        selectedTag.className = 'review-choice-tag';
+        selectedTag.textContent = 'Your answer';
+        toggle.appendChild(selectedTag);
+      }
+
+      var detail = document.createElement('p');
+      detail.className = 'review-choice-explanation';
+      detail.hidden = true;
+      var choiceExplanations = question.choiceExplanations || {};
+      detail.textContent = choiceExplanations[choice.id] || question.explanation;
+
+      toggle.addEventListener('click', function () {
+        var expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        detail.hidden = expanded;
+      });
+
+      item.append(toggle, detail);
+      list.appendChild(item);
+    });
+
+    return list;
+  }
+
   function renderResults(score) {
     els.score.textContent = score.percent + '%';
     els.passFail.textContent = score.passed ? 'Passed' : 'Not passed yet';
     els.passFail.className = score.passed ? 'badge success' : 'badge attention';
     els.encouragement.textContent = score.passed
-      ? 'Great work — review the explanations below to reinforce your strengths before exam day.'
-      : 'Keep going. Use the explanations below to focus your next practice session and try again when ready.';
+      ? 'Great work — click into each choice below to see why it was right or wrong before exam day.'
+      : 'Keep going. Click into each choice below to see why it was right or wrong, then try again when ready.';
     els.review.innerHTML = '';
 
     state.activeQuestions.forEach(function (question, index) {
@@ -354,9 +413,23 @@
       var outcome = document.createElement('p');
       outcome.className = result.correct ? 'correct' : 'incorrect';
       outcome.textContent = result.correct ? 'Correct' : 'Review this topic';
-      var explanation = document.createElement('p');
-      explanation.textContent = question.explanation;
-      article.append(title, outcome, explanation);
+      article.append(title, outcome);
+
+      if (question.choices && question.choices.length) {
+        article.appendChild(renderReviewChoices(question, state.responses[question.id]));
+      } else {
+        var explanation = document.createElement('p');
+        explanation.textContent = question.explanation;
+        article.appendChild(explanation);
+      }
+
+      if (question.spark) {
+        var spark = document.createElement('p');
+        spark.className = 'review-spark';
+        spark.textContent = 'Spark: ' + question.spark;
+        article.appendChild(spark);
+      }
+
       els.review.appendChild(article);
     });
   }
