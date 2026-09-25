@@ -48,6 +48,13 @@ test('selectQuestions treats invalid explicit counts as zero', () => {
   assert.deepEqual(selected, []);
 });
 
+test('resolveRequestedCount defaults blank counts and rejects invalid counts', () => {
+  assert.equal(engine.resolveRequestedCount('', 6), 6);
+  assert.equal(engine.resolveRequestedCount(undefined, 6), 6);
+  assert.equal(engine.resolveRequestedCount('3.8', 6), 3);
+  assert.equal(engine.resolveRequestedCount('not-a-number', 6), 0);
+});
+
 test('scoreExam grades multiple-answer questions independent of answer order', () => {
   const question = questions.find((item) => item.id === 'gh600-001');
   const score = engine.scoreExam([question], {

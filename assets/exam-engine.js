@@ -29,17 +29,26 @@
     }))).sort();
   }
 
+  function resolveRequestedCount(count, fallback) {
+    if (count === undefined || count === null || count === '') {
+      return fallback;
+    }
+
+    var parsedCount = Number(count);
+    if (!Number.isFinite(parsedCount)) {
+      return 0;
+    }
+
+    return Math.max(0, Math.floor(parsedCount));
+  }
+
   function selectQuestions(questions, options) {
     var settings = options || {};
     var filtered = questions.filter(function (question) {
       return settings.topic === 'all' || !settings.topic || question.topic === settings.topic;
     });
     var ordered = settings.randomize ? shuffle(filtered, settings.random) : filtered.slice();
-    var hasRequestedCount = settings.count !== undefined && settings.count !== null && settings.count !== '';
-    var parsedCount = Number(settings.count);
-    var requestedCount = hasRequestedCount && Number.isFinite(parsedCount)
-      ? Math.max(0, Math.floor(parsedCount))
-      : (hasRequestedCount ? 0 : ordered.length);
+    var requestedCount = resolveRequestedCount(settings.count, ordered.length);
     return ordered.slice(0, Math.min(requestedCount, ordered.length));
   }
 
@@ -79,6 +88,7 @@
     isCorrect: isCorrect,
     scoreExam: scoreExam,
     selectQuestions: selectQuestions,
+    resolveRequestedCount: resolveRequestedCount,
     shuffle: shuffle
   };
 });

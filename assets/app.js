@@ -119,10 +119,17 @@
   }
 
   function renderMultipleChoice(question) {
+    if (question.type !== 'multiple-choice') {
+      return;
+    }
+
     var fieldset = document.createElement('fieldset');
     var legend = document.createElement('legend');
     var isMulti = question.multiple === true;
-    var selectedAnswers = Array.isArray(state.responses[question.id]) ? state.responses[question.id] : [];
+    if (!Array.isArray(state.responses[question.id])) {
+      state.responses[question.id] = [];
+    }
+    var selectedAnswers = state.responses[question.id];
     legend.textContent = isMulti ? 'Choose all that apply.' : 'Choose one answer.';
     fieldset.appendChild(legend);
 
