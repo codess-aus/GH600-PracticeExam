@@ -39,7 +39,7 @@
     var parsedCount = Number(settings.count);
     var requestedCount = hasRequestedCount && Number.isFinite(parsedCount)
       ? Math.max(0, Math.floor(parsedCount))
-      : ordered.length;
+      : (hasRequestedCount ? 0 : ordered.length);
     return ordered.slice(0, Math.min(requestedCount, ordered.length));
   }
 

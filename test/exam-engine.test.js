@@ -38,6 +38,16 @@ test('selectQuestions respects an explicit zero count', () => {
   assert.deepEqual(selected, []);
 });
 
+test('selectQuestions treats invalid explicit counts as zero', () => {
+  const selected = engine.selectQuestions(questions, {
+    topic: 'Security',
+    count: 'not-a-number',
+    randomize: false
+  });
+
+  assert.deepEqual(selected, []);
+});
+
 test('scoreExam grades multiple-answer questions independent of answer order', () => {
   const question = questions.find((item) => item.id === 'gh600-001');
   const score = engine.scoreExam([question], {

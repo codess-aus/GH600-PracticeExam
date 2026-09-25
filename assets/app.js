@@ -122,6 +122,7 @@
     var fieldset = document.createElement('fieldset');
     var legend = document.createElement('legend');
     var isMulti = question.multiple === true;
+    var selectedAnswers = Array.isArray(state.responses[question.id]) ? state.responses[question.id] : [];
     legend.textContent = isMulti ? 'Choose all that apply.' : 'Choose one answer.';
     fieldset.appendChild(legend);
 
@@ -129,7 +130,6 @@
       var label = document.createElement('label');
       label.className = 'choice';
       var input = document.createElement('input');
-      var selectedAnswers = Array.isArray(state.responses[question.id]) ? state.responses[question.id] : [];
       input.type = isMulti ? 'checkbox' : 'radio';
       input.name = question.id;
       input.value = choice.id;
