@@ -337,6 +337,11 @@
   // Builds the clickable, per-choice breakdown shown under each review card, so a
   // participant can open any option (selected, correct, or neither) and read why
   // that specific choice was right or wrong, instead of only a single summary line.
+  //
+  // @param {Object} question - A question object; expects `choices` (Array<{id, text}>),
+  //   `correctAnswers` (Array<string>), and `choiceExplanations` (Object<string, string>).
+  // @param {string[]} response - Array of choice ids the participant selected.
+  // @returns {HTMLUListElement} An unordered list of expandable review choices.
   function renderReviewChoices(question, response) {
     var list = document.createElement('ul');
     list.className = 'review-choice-list';
@@ -379,7 +384,7 @@
       if (!explanationText) {
         // eslint-disable-next-line no-console
         console.warn('Missing choiceExplanations entry for choice "' + choice.id + '" on question "' + question.id + '"');
-        explanationText = question.explanation;
+        explanationText = 'No specific explanation available for this choice.';
       }
       var detail = document.createElement('p');
       detail.className = 'review-choice-explanation';
