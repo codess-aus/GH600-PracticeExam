@@ -2,7 +2,8 @@
 
 A dependency-free static practice exam app for GH600 preparation. It supports:
 
-- Timed exam mode or untimed practice mode
+- Timed exam mode with a 90-minute countdown, or learning mode without a timer
+- Immediate answer feedback in learning mode: reveal the correct answer, result, and explanation after answering each question
 - Random question selection or topic-specific sessions
 - Multiple-choice and drag-and-drop style questions
 - Automatic scoring with pass/fail feedback and explanations

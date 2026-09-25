@@ -217,6 +217,41 @@ fieldset {
   box-shadow: 0 0 0 1px var(--accent);
 }
 
+.choice.choice-correct {
+  border-color: var(--success);
+  box-shadow: 0 0 0 1px var(--success);
+}
+
+.choice.choice-incorrect {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 1px var(--danger);
+}
+
+.reveal-answer {
+  width: 100%;
+  margin-top: 1.5rem;
+  border: 1px solid var(--accent);
+  background: var(--canvas-subtle);
+  text-align: left;
+}
+
+.answer-feedback {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: var(--canvas-subtle);
+  padding: 1rem;
+}
+
+.answer-feedback p:last-child {
+  margin-bottom: 0;
+}
+
+.neutral {
+  color: var(--muted);
+  font-weight: 800;
+}
+
 .drag-board {
   display: grid;
   grid-template-columns: minmax(12rem, 0.8fr) minmax(16rem, 1.2fr);

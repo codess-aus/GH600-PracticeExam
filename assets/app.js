@@ -11,6 +11,8 @@
     activeQuestions: [],
     currentIndex: 0,
     responses: {},
+    // Tracks questions whose learning-mode feedback has been shown and locked.
+    revealed: {},
     timerId: null,
     remainingSeconds: 0,
     finished: false
@@ -60,11 +62,12 @@
 
   function startTimer() {
     window.clearInterval(state.timerId);
-    if (els.mode.value !== TIMED_MODE) {
-      els.timer.textContent = 'Untimed practice';
+    if (isLearningMode()) {
+      els.timer.hidden = true;
       return;
     }
 
+    els.timer.hidden = false;
     state.remainingSeconds = DEFAULT_MINUTES * 60;
     updateTimerLabel();
     state.timerId = window.setInterval(function () {
@@ -82,6 +85,11 @@
     els.timer.textContent = minutes + ':' + seconds + ' remaining';
   }
 
+  // Returns whether the current session uses immediate learning feedback.
+  function isLearningMode() {
+    return els.mode.value === 'learning';
+  }
+
   function startExam() {
     state.activeQuestions = engine.selectQuestions(questions, {
       topic: els.topic.value,
@@ -90,6 +98,7 @@
     });
     state.currentIndex = 0;
     state.responses = {};
+    state.revealed = {};
     state.finished = false;
     showScreen('exam');
     startTimer();
@@ -114,6 +123,10 @@
       renderDragDrop(question);
     } else {
       renderMultipleChoice(question);
+    }
+
+    if (isLearningMode()) {
+      renderRevealAnswer(question);
     }
 
     els.prev.disabled = state.currentIndex === 0;
@@ -143,7 +156,18 @@
       input.name = question.id;
       input.value = choice.id;
       input.checked = selectedAnswers.indexOf(choice.id) !== -1;
+      if (state.revealed[question.id]) {
+        input.disabled = true;
+        if (question.correctAnswers.indexOf(choice.id) !== -1) {
+          label.classList.add('choice-correct');
+        } else if (input.checked) {
+          label.classList.add('choice-incorrect');
+        }
+      }
       input.addEventListener('change', function () {
+        if (state.revealed[question.id]) {
+          return;
+        }
         if (isMulti) {
           state.responses[question.id] = Array.from(fieldset.querySelectorAll('input:checked')).map(function (selected) {
             return selected.value;
@@ -157,6 +181,46 @@
     });
 
     els.questionCard.appendChild(fieldset);
+  }
+
+  // Shows and locks immediate feedback for the current learning-mode question.
+  function renderRevealAnswer(question) {
+    var revealed = state.revealed[question.id];
+    var reveal = document.createElement('button');
+    reveal.type = 'button';
+    reveal.className = 'reveal-answer';
+    reveal.textContent = revealed ? 'Answer revealed' : 'Reveal answer';
+    reveal.disabled = revealed;
+    reveal.addEventListener('click', function () {
+      state.revealed[question.id] = true;
+      renderQuestion();
+    });
+    els.questionCard.appendChild(reveal);
+
+    if (!revealed) {
+      return;
+    }
+
+    var response = state.responses[question.id];
+    var feedback = document.createElement('div');
+    feedback.className = 'answer-feedback';
+    feedback.setAttribute('aria-live', 'polite');
+
+    var result = document.createElement('p');
+    if (!engine.hasResponse(question, response)) {
+      result.className = 'neutral';
+      result.textContent = "You didn't choose an answer.";
+    } else if (engine.isCorrect(question, response)) {
+      result.className = 'correct';
+      result.textContent = 'Correct';
+    } else {
+      result.className = 'incorrect';
+      result.textContent = 'Incorrect';
+    }
+    var explanation = document.createElement('p');
+    explanation.textContent = question.explanation;
+    feedback.append(result, explanation);
+    els.questionCard.appendChild(feedback);
   }
 
   function renderDragDrop(question) {
@@ -222,6 +286,9 @@
   }
 
   function setDragResponse(question, targetId, optionId) {
+    if (state.revealed[question.id]) {
+      return;
+    }
     var response = Object.assign({}, state.responses[question.id] || {});
     Object.keys(response).forEach(function (key) {
       if (response[key] === optionId) {
