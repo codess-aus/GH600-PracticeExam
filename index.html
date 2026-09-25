@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GH600 Practice Exam Simulator</title>
+    <link rel="stylesheet" href="assets/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="logo-row">
+          <span class="logo" aria-hidden="true">GH</span>
+          <strong>GH600 Practice Lab</strong>
+        </div>
+        <div>
+          <h1 id="page-title">Prepare for the GH600 exam with focused practice.</h1>
+          <p>Choose timed exam mode or relaxed study mode, focus on one topic or a random set, then review your score and explanations.</p>
+        </div>
+      </section>
+
+      <section class="panel" data-screen="setup" aria-labelledby="setup-title">
+        <h2 id="setup-title">Build your session</h2>
+        <div class="setup-grid">
+          <label class="field" for="mode">
+            Practice mode
+            <select id="mode">
+              <option id="timed-option">Timed exam</option>
+              <option value="untimed">Untimed practice</option>
+            </select>
+          </label>
+          <label class="field" for="topic">
+            Topic
+            <select id="topic">
+              <option value="all">All topics</option>
+            </select>
+          </label>
+          <label class="field" for="count">
+            Number of questions
+            <input id="count" type="number" min="1" value="6">
+          </label>
+          <label class="check-field" for="randomize">
+            <input id="randomize" type="checkbox" checked>
+            Random selection
+          </label>
+        </div>
+        <button id="start-exam" type="button">Start practice exam</button>
+      </section>
+
+      <section data-screen="exam" hidden aria-live="polite">
+        <div class="exam-bar">
+          <span id="question-progress" class="badge"></span>
+          <span id="timer" class="badge"></span>
+        </div>
+        <article id="question-card" class="question-card"></article>
+        <nav class="nav-row" aria-label="Question navigation">
+          <button id="prev-question" class="secondary" type="button">Previous</button>
+          <button id="next-question" class="secondary" type="button">Next</button>
+          <button id="finish-exam" type="button">Finish and score</button>
+        </nav>
+      </section>
+
+      <section class="results-card" data-screen="results" hidden aria-labelledby="results-title">
+        <h2 id="results-title">Your exam results</h2>
+        <div class="score-line">
+          <span id="score" class="score">0%</span>
+          <span id="pass-fail" class="badge"></span>
+        </div>
+        <p id="encouragement"></p>
+        <div id="review" class="review-list"></div>
+        <button id="restart-exam" type="button">Create another session</button>
+      </section>
+    </main>
+
+    <script src="assets/exam-engine.js"></script>
+    <script src="assets/questions.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
