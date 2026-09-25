@@ -66,6 +66,17 @@ test('scoreExam grades multiple-answer questions independent of answer order', (
   assert.equal(score.passed, true);
 });
 
+test('scoreExam marks unanswered multiple-choice questions incorrect', () => {
+  const question = questions.find((item) => item.id === 'gh600-002');
+  const score = engine.scoreExam([question], {}, 70);
+
+  assert.equal(engine.isCorrect(question, undefined), false);
+  assert.equal(engine.isCorrect(question, null), false);
+  assert.equal(score.correctCount, 0);
+  assert.equal(score.percent, 0);
+  assert.equal(score.passed, false);
+});
+
 test('multiple-choice questions declare whether they allow multiple selections', () => {
   const multipleChoiceQuestions = questions.filter((question) => question.type === 'multiple-choice');
 

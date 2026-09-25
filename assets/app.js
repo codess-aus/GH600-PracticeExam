@@ -4,6 +4,7 @@
   var PASSING_PERCENT = 70;
   var DEFAULT_MINUTES = 90;
   var DEFAULT_QUESTION_COUNT = 10;
+  var TIMED_MODE = 'timed';
   var questions = window.GH600_QUESTIONS;
   var engine = window.ExamEngine;
   var state = {
@@ -45,6 +46,7 @@
   }
 
   function initSetup() {
+    els.timedOption.value = TIMED_MODE;
     els.timedOption.textContent = 'Timed exam (' + DEFAULT_MINUTES + ' minutes)';
     engine.getTopics(questions).forEach(function (topic) {
       var option = document.createElement('option');
@@ -58,7 +60,7 @@
 
   function startTimer() {
     window.clearInterval(state.timerId);
-    if (els.mode.value !== 'timed') {
+    if (els.mode.value !== TIMED_MODE) {
       els.timer.textContent = 'Untimed practice';
       return;
     }
@@ -277,12 +279,16 @@
     showScreen('setup');
   });
   els.prev.addEventListener('click', function () {
-    state.currentIndex -= 1;
-    renderQuestion();
+    if (state.currentIndex > 0) {
+      state.currentIndex -= 1;
+      renderQuestion();
+    }
   });
   els.next.addEventListener('click', function () {
-    state.currentIndex += 1;
-    renderQuestion();
+    if (state.currentIndex < state.activeQuestions.length - 1) {
+      state.currentIndex += 1;
+      renderQuestion();
+    }
   });
   els.finish.addEventListener('click', finishExam);
 
