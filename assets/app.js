@@ -374,11 +374,17 @@
         toggle.appendChild(selectedTag);
       }
 
+      var choiceExplanations = question.choiceExplanations || {};
+      var explanationText = choiceExplanations[choice.id];
+      if (!explanationText) {
+        // eslint-disable-next-line no-console
+        console.warn('Missing choiceExplanations entry for choice "' + choice.id + '" on question "' + question.id + '"');
+        explanationText = question.explanation;
+      }
       var detail = document.createElement('p');
       detail.className = 'review-choice-explanation';
       detail.hidden = true;
-      var choiceExplanations = question.choiceExplanations || {};
-      detail.textContent = choiceExplanations[choice.id] || question.explanation;
+      detail.textContent = explanationText;
 
       toggle.addEventListener('click', function () {
         var expanded = toggle.getAttribute('aria-expanded') === 'true';
