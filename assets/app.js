@@ -5,12 +5,17 @@
   var DEFAULT_MINUTES = 90;
   var DEFAULT_QUESTION_COUNT = 10;
   var TIMED_MODE = 'timed';
+  var LEARNING_MODE = 'learning';
   var questions = window.GH600_QUESTIONS;
   var engine = window.ExamEngine;
   var state = {
     activeQuestions: [],
     currentIndex: 0,
     responses: {},
+    // Tracks questions whose learning-mode feedback has been shown and locked.
+    revealed: {},
+    // Captures the selected mode for the lifetime of the current session.
+    mode: TIMED_MODE,
     timerId: null,
     remainingSeconds: 0,
     finished: false
@@ -28,6 +33,7 @@
     start: document.getElementById('start-exam'),
     restart: document.getElementById('restart-exam'),
     questionCard: document.getElementById('question-card'),
+    learningFeedback: document.getElementById('learning-feedback'),
     questionProgress: document.getElementById('question-progress'),
     timer: document.getElementById('timer'),
     prev: document.getElementById('prev-question'),
@@ -60,11 +66,12 @@
 
   function startTimer() {
     window.clearInterval(state.timerId);
-    if (els.mode.value !== TIMED_MODE) {
-      els.timer.textContent = 'Untimed practice';
+    if (isLearningMode()) {
+      els.timer.hidden = true;
       return;
     }
 
+    els.timer.hidden = false;
     state.remainingSeconds = DEFAULT_MINUTES * 60;
     updateTimerLabel();
     state.timerId = window.setInterval(function () {
@@ -82,6 +89,11 @@
     els.timer.textContent = minutes + ':' + seconds + ' remaining';
   }
 
+  // Returns whether the current session uses immediate learning feedback.
+  function isLearningMode() {
+    return state.mode === LEARNING_MODE;
+  }
+
   function startExam() {
     state.activeQuestions = engine.selectQuestions(questions, {
       topic: els.topic.value,
@@ -90,6 +102,8 @@
     });
     state.currentIndex = 0;
     state.responses = {};
+    state.revealed = {};
+    state.mode = els.mode.value;
     state.finished = false;
     showScreen('exam');
     startTimer();
@@ -100,6 +114,7 @@
     var question = state.activeQuestions[state.currentIndex];
     els.questionProgress.textContent = 'Question ' + (state.currentIndex + 1) + ' of ' + state.activeQuestions.length;
     els.questionCard.innerHTML = '';
+    els.learningFeedback.innerHTML = '';
 
     var topic = document.createElement('p');
     topic.className = 'eyebrow';
@@ -114,6 +129,10 @@
       renderDragDrop(question);
     } else {
       renderMultipleChoice(question);
+    }
+
+    if (isLearningMode()) {
+      renderRevealAnswer(question);
     }
 
     els.prev.disabled = state.currentIndex === 0;
@@ -143,7 +162,18 @@
       input.name = question.id;
       input.value = choice.id;
       input.checked = selectedAnswers.indexOf(choice.id) !== -1;
+      if (state.revealed[question.id]) {
+        input.disabled = true;
+        if (question.correctAnswers.indexOf(choice.id) !== -1) {
+          label.classList.add('choice-correct');
+        } else if (input.checked) {
+          label.classList.add('choice-incorrect');
+        }
+      }
       input.addEventListener('change', function () {
+        if (state.revealed[question.id]) {
+          return;
+        }
         if (isMulti) {
           state.responses[question.id] = Array.from(fieldset.querySelectorAll('input:checked')).map(function (selected) {
             return selected.value;
@@ -159,7 +189,44 @@
     els.questionCard.appendChild(fieldset);
   }
 
+  // Shows and locks immediate feedback for the current learning-mode question.
+  function renderRevealAnswer(question) {
+    var revealed = state.revealed[question.id];
+    var reveal = document.createElement('button');
+    reveal.type = 'button';
+    reveal.className = 'reveal-answer';
+    reveal.textContent = revealed ? 'Answer revealed' : 'Reveal answer';
+    reveal.disabled = revealed;
+    reveal.addEventListener('click', function () {
+      state.revealed[question.id] = true;
+      renderQuestion();
+    });
+    els.questionCard.appendChild(reveal);
+
+    if (!revealed) {
+      return;
+    }
+
+    var response = state.responses[question.id];
+    var result = document.createElement('p');
+    if (!engine.hasResponse(question, response)) {
+      result.className = 'neutral';
+      result.textContent = "You didn't choose an answer.";
+    } else if (engine.isCorrect(question, response)) {
+      result.className = 'correct';
+      result.textContent = 'Correct';
+    } else {
+      result.className = 'incorrect';
+      result.textContent = 'Incorrect';
+    }
+    var explanation = document.createElement('p');
+    explanation.textContent = question.explanation;
+    els.learningFeedback.append(result, explanation);
+  }
+
   function renderDragDrop(question) {
+    var revealed = state.revealed[question.id];
+    var response = state.responses[question.id] || {};
     var instructions = document.createElement('p');
     instructions.className = 'muted';
     instructions.textContent = 'Drag each item to a matching target, or use the dropdowns for keyboard-friendly selection.';
@@ -174,6 +241,7 @@
       token.type = 'button';
       token.className = 'drag-token';
       token.draggable = true;
+      token.disabled = revealed;
       token.dataset.optionId = option.id;
       token.textContent = option.text;
       token.addEventListener('dragstart', function (event) {
@@ -208,12 +276,28 @@
         optionEl.textContent = option.text;
         select.appendChild(optionEl);
       });
-      select.value = (state.responses[question.id] || {})[target.id] || '';
+      select.value = response[target.id] || '';
+      select.disabled = revealed;
       select.addEventListener('change', function () {
         setDragResponse(question, target.id, select.value);
       });
 
       wrapper.append(span, select);
+      if (revealed) {
+        var correctOption = question.options.find(function (option) {
+          return option.id === target.correct;
+        });
+        var selectedOption = response[target.id];
+        var answer = document.createElement('p');
+        answer.className = 'correct-answer';
+        answer.textContent = 'Correct answer: ' + (correctOption ? correctOption.text : target.correct);
+        wrapper.appendChild(answer);
+        if (selectedOption === target.correct) {
+          wrapper.classList.add('drop-correct');
+        } else if (selectedOption) {
+          wrapper.classList.add('drop-incorrect');
+        }
+      }
       targets.appendChild(wrapper);
     });
 
@@ -222,6 +306,9 @@
   }
 
   function setDragResponse(question, targetId, optionId) {
+    if (state.revealed[question.id]) {
+      return;
+    }
     var response = Object.assign({}, state.responses[question.id] || {});
     Object.keys(response).forEach(function (key) {
       if (response[key] === optionId) {

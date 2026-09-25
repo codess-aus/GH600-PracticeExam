@@ -62,6 +62,15 @@
     return JSON.stringify(normalize(response)) === JSON.stringify(normalize(question.correctAnswers));
   }
 
+  // Reports whether a participant supplied an answer for feedback messaging.
+  function hasResponse(question, response) {
+    if (question.type === 'drag-drop') {
+      return Boolean(response && Object.keys(response).length);
+    }
+
+    return normalize(response).length > 0;
+  }
+
   function scoreExam(questions, responses, passingPercent) {
     var results = questions.map(function (question) {
       return {
@@ -85,6 +94,7 @@
 
   return {
     getTopics: getTopics,
+    hasResponse: hasResponse,
     isCorrect: isCorrect,
     scoreExam: scoreExam,
     selectQuestions: selectQuestions,

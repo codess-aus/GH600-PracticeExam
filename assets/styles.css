@@ -19,6 +19,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   min-height: 100vh;
   margin: 0;
@@ -217,6 +221,42 @@ fieldset {
   box-shadow: 0 0 0 1px var(--accent);
 }
 
+.choice.choice-correct {
+  border-color: var(--success);
+  box-shadow: 0 0 0 1px var(--success);
+}
+
+.choice.choice-incorrect {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 1px var(--danger);
+}
+
+.reveal-answer {
+  width: 100%;
+  margin-top: 1.5rem;
+  border: 1px solid var(--accent);
+  background: var(--canvas-subtle);
+  text-align: left;
+}
+
+.answer-feedback:not(:empty) {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: var(--canvas-subtle);
+  padding: 1rem;
+}
+
+.answer-feedback p:last-child {
+  margin-bottom: 0;
+}
+
+.answer-feedback .neutral,
+.correct-answer {
+  color: var(--muted);
+  font-weight: 800;
+}
+
 .drag-board {
   display: grid;
   grid-template-columns: minmax(12rem, 0.8fr) minmax(16rem, 1.2fr);
@@ -240,6 +280,14 @@ fieldset {
 .drag-token {
   color: var(--fg);
   text-align: left;
+}
+
+.drop-target.drop-correct {
+  border-color: var(--success);
+}
+
+.drop-target.drop-incorrect {
+  border-color: var(--danger);
 }
 
 .drop-target {

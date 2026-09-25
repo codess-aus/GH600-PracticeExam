@@ -15,7 +15,7 @@
         </div>
         <div>
           <h1 id="page-title">Prepare for the GH600 exam with focused practice.</h1>
-          <p>Choose timed exam mode or relaxed study mode, focus on one topic or a random set, then review your score and explanations.</p>
+          <p>Choose timed exam mode or learning mode, focus on one topic or a random set, then review your score and explanations.</p>
         </div>
       </section>
 
@@ -25,8 +25,8 @@
           <label class="field" for="mode">
             Practice mode
             <select id="mode">
-              <option id="timed-option">Timed exam</option>
-              <option value="untimed">Untimed practice</option>
+              <option id="timed-option" value="timed">Timed exam</option>
+              <option value="learning">Learning mode</option>
             </select>
           </label>
           <label class="field" for="topic">
@@ -53,6 +53,7 @@
           <span id="timer" class="badge"></span>
         </div>
         <article id="question-card" class="question-card"></article>
+        <div id="learning-feedback" class="answer-feedback" aria-live="polite"></div>
         <nav class="nav-row" aria-label="Question navigation">
           <button id="prev-question" class="secondary" type="button">Previous</button>
           <button id="next-question" class="secondary" type="button">Next</button>
