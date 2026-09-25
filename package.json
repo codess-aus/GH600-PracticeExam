@@ -1,0 +1,14 @@
+{
+  "name": "gh600-practice-exam",
+  "version": "1.0.0",
+  "description": "Static GH600 practice exam simulator with timed and untimed modes.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "gh600",
+    "practice-exam",
+    "github"
+  ],
+  "license": "MIT"
+}
