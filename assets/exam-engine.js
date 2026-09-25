@@ -35,8 +35,12 @@
       return settings.topic === 'all' || !settings.topic || question.topic === settings.topic;
     });
     var ordered = settings.randomize ? shuffle(filtered, settings.random) : filtered.slice();
-    var requestedCount = Number(settings.count) || ordered.length;
-    return ordered.slice(0, Math.max(1, Math.min(requestedCount, ordered.length)));
+    var hasRequestedCount = settings.count !== undefined && settings.count !== null && settings.count !== '';
+    var parsedCount = Number(settings.count);
+    var requestedCount = hasRequestedCount && Number.isFinite(parsedCount)
+      ? Math.max(0, Math.floor(parsedCount))
+      : ordered.length;
+    return ordered.slice(0, Math.min(requestedCount, ordered.length));
   }
 
   function isCorrect(question, response) {

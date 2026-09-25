@@ -3,6 +3,19 @@ const assert = require('node:assert/strict');
 const engine = require('../assets/exam-engine');
 const questions = require('../assets/questions');
 
+test('getTopics returns sorted unique topics', () => {
+  assert.deepEqual(engine.getTopics(questions), [
+    'Collaboration',
+    'GitHub Actions',
+    'GitHub Foundations',
+    'Security'
+  ]);
+});
+
+test('shuffle supports deterministic ordering with an injected random function', () => {
+  assert.deepEqual(engine.shuffle(['a', 'b', 'c'], () => 0), ['b', 'c', 'a']);
+});
+
 test('selectQuestions filters by topic and supports deterministic random selection', () => {
   const selected = engine.selectQuestions(questions, {
     topic: 'Security',
@@ -13,6 +26,16 @@ test('selectQuestions filters by topic and supports deterministic random selecti
 
   assert.equal(selected.length, 1);
   assert.equal(selected[0].topic, 'Security');
+});
+
+test('selectQuestions respects an explicit zero count', () => {
+  const selected = engine.selectQuestions(questions, {
+    topic: 'Security',
+    count: 0,
+    randomize: false
+  });
+
+  assert.deepEqual(selected, []);
 });
 
 test('scoreExam grades multiple-answer questions independent of answer order', () => {

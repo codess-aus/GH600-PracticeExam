@@ -3,6 +3,7 @@
 
   var PASSING_PERCENT = 70;
   var DEFAULT_MINUTES = 90;
+  var DEFAULT_QUESTION_COUNT = 10;
   var questions = window.GH600_QUESTIONS;
   var engine = window.ExamEngine;
   var state = {
@@ -52,7 +53,7 @@
       els.topic.appendChild(option);
     });
     els.count.max = questions.length;
-    els.count.value = Math.min(10, questions.length);
+    els.count.value = Math.min(DEFAULT_QUESTION_COUNT, questions.length);
   }
 
   function startTimer() {
@@ -128,10 +129,11 @@
       var label = document.createElement('label');
       label.className = 'choice';
       var input = document.createElement('input');
+      var selectedAnswers = Array.isArray(state.responses[question.id]) ? state.responses[question.id] : [];
       input.type = isMulti ? 'checkbox' : 'radio';
       input.name = question.id;
       input.value = choice.id;
-      input.checked = (state.responses[question.id] || []).indexOf(choice.id) !== -1;
+      input.checked = selectedAnswers.indexOf(choice.id) !== -1;
       input.addEventListener('change', function () {
         if (isMulti) {
           state.responses[question.id] = Array.from(fieldset.querySelectorAll('input:checked')).map(function (selected) {
