@@ -223,6 +223,7 @@
 
   function renderDragDrop(question) {
     var revealed = state.revealed[question.id];
+    var response = state.responses[question.id] || {};
     var instructions = document.createElement('p');
     instructions.className = 'muted';
     instructions.textContent = 'Drag each item to a matching target, or use the dropdowns for keyboard-friendly selection.';
@@ -272,7 +273,7 @@
         optionEl.textContent = option.text;
         select.appendChild(optionEl);
       });
-      select.value = (state.responses[question.id] || {})[target.id] || '';
+      select.value = response[target.id] || '';
       select.disabled = revealed;
       select.addEventListener('change', function () {
         setDragResponse(question, target.id, select.value);
@@ -283,9 +284,9 @@
         var correctOption = question.options.find(function (option) {
           return option.id === target.correct;
         });
-        var selectedOption = (state.responses[question.id] || {})[target.id];
+        var selectedOption = response[target.id];
         var answer = document.createElement('p');
-        answer.className = 'correct';
+        answer.className = 'correct-answer';
         answer.textContent = 'Correct answer: ' + (correctOption ? correctOption.text : target.correct);
         wrapper.appendChild(answer);
         if (selectedOption === target.correct) {

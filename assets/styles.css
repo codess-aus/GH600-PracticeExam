@@ -19,6 +19,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   min-height: 100vh;
   margin: 0;
@@ -248,6 +252,11 @@ fieldset {
 }
 
 .answer-feedback .neutral {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.correct-answer {
   color: var(--muted);
   font-weight: 800;
 }
