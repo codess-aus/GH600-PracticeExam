@@ -13,6 +13,7 @@
       id: 'gh600-001',
       topic: 'GitHub Foundations',
       type: 'multiple-choice',
+      multiple: true,
       prompt: 'Which features help teams keep protected branches stable before changes are merged?',
       choices: [
         { id: 'a', text: 'Required pull request reviews' },
@@ -27,6 +28,7 @@
       id: 'gh600-002',
       topic: 'GitHub Actions',
       type: 'multiple-choice',
+      multiple: false,
       prompt: 'A workflow should run whenever a pull request targets the main branch. Which event is most appropriate?',
       choices: [
         { id: 'a', text: 'pull_request' },
@@ -41,6 +43,7 @@
       id: 'gh600-003',
       topic: 'Security',
       type: 'multiple-choice',
+      multiple: true,
       prompt: 'Which GitHub features can help find vulnerable dependencies or exposed credentials?',
       choices: [
         { id: 'a', text: 'Dependabot alerts' },
@@ -55,6 +58,7 @@
       id: 'gh600-004',
       topic: 'Collaboration',
       type: 'multiple-choice',
+      multiple: false,
       prompt: 'What is the main purpose of a CODEOWNERS file?',
       choices: [
         { id: 'a', text: 'Automatically request reviews from owners of changed files' },

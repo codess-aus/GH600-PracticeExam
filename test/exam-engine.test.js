@@ -26,6 +26,15 @@ test('scoreExam grades multiple-answer questions independent of answer order', (
   assert.equal(score.passed, true);
 });
 
+test('multiple-choice questions declare whether they allow multiple selections', () => {
+  const multipleChoiceQuestions = questions.filter((question) => question.type === 'multiple-choice');
+
+  assert.ok(multipleChoiceQuestions.length > 0);
+  multipleChoiceQuestions.forEach((question) => {
+    assert.equal(typeof question.multiple, 'boolean');
+  });
+});
+
 test('scoreExam grades drag-and-drop matches and reports failed attempts', () => {
   const question = questions.find((item) => item.type === 'drag-drop');
   const correctResponse = Object.fromEntries(question.targets.map((target) => [target.id, target.correct]));

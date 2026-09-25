@@ -21,6 +21,7 @@
     topic: document.getElementById('topic'),
     count: document.getElementById('count'),
     mode: document.getElementById('mode'),
+    timedOption: document.getElementById('timed-option'),
     randomize: document.getElementById('randomize'),
     start: document.getElementById('start-exam'),
     restart: document.getElementById('restart-exam'),
@@ -43,6 +44,7 @@
   }
 
   function initSetup() {
+    els.timedOption.textContent = 'Timed exam (' + DEFAULT_MINUTES + ' minutes)';
     engine.getTopics(questions).forEach(function (topic) {
       var option = document.createElement('option');
       option.value = topic;
@@ -118,7 +120,7 @@
   function renderMultipleChoice(question) {
     var fieldset = document.createElement('fieldset');
     var legend = document.createElement('legend');
-    var isMulti = question.correctAnswers.length > 1;
+    var isMulti = question.multiple === true;
     legend.textContent = isMulti ? 'Choose all that apply.' : 'Choose one answer.';
     fieldset.appendChild(legend);
 

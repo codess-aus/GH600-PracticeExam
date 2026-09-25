@@ -12,6 +12,10 @@ A dependency-free static practice exam app for GH600 preparation. It supports:
 
 Open `index.html` in a browser, or serve the repository with any static file server.
 
+## Publish with GitHub Pages
+
+This repository includes a GitHub Pages workflow at `.github/workflows/pages.yml`. In the repository settings, set Pages to use **GitHub Actions** as the source. The app will deploy when changes are pushed to `main`, or when the workflow is run manually.
+
 ## Update questions
 
 Edit `assets/questions.js` to add the official questions, answer keys, and explanations. Questions can use `multiple-choice` or `drag-drop` types.
