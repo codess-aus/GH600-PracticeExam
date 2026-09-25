@@ -79,10 +79,15 @@ test('scoreExam marks unanswered multiple-choice questions incorrect', () => {
 
 test('hasResponse distinguishes unanswered and selected choice questions', () => {
   const question = questions[0];
+  const dragQuestion = {
+    type: 'drag-drop'
+  };
 
   assert.equal(engine.hasResponse(question, undefined), false);
   assert.equal(engine.hasResponse(question, []), false);
   assert.equal(engine.hasResponse(question, ['a']), true);
+  assert.equal(engine.hasResponse(dragQuestion, {}), false);
+  assert.equal(engine.hasResponse(dragQuestion, { target: 'option' }), true);
 });
 
 test('multiple-choice questions declare whether they allow multiple selections', () => {

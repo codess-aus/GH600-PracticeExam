@@ -5,6 +5,7 @@
   var DEFAULT_MINUTES = 90;
   var DEFAULT_QUESTION_COUNT = 10;
   var TIMED_MODE = 'timed';
+  var LEARNING_MODE = 'learning';
   var questions = window.GH600_QUESTIONS;
   var engine = window.ExamEngine;
   var state = {
@@ -87,7 +88,7 @@
 
   // Returns whether the current session uses immediate learning feedback.
   function isLearningMode() {
-    return els.mode.value === 'learning';
+    return els.mode.value === LEARNING_MODE;
   }
 
   function startExam() {
@@ -224,6 +225,7 @@
   }
 
   function renderDragDrop(question) {
+    var revealed = state.revealed[question.id];
     var instructions = document.createElement('p');
     instructions.className = 'muted';
     instructions.textContent = 'Drag each item to a matching target, or use the dropdowns for keyboard-friendly selection.';
@@ -238,6 +240,7 @@
       token.type = 'button';
       token.className = 'drag-token';
       token.draggable = true;
+      token.disabled = revealed;
       token.dataset.optionId = option.id;
       token.textContent = option.text;
       token.addEventListener('dragstart', function (event) {
@@ -273,11 +276,27 @@
         select.appendChild(optionEl);
       });
       select.value = (state.responses[question.id] || {})[target.id] || '';
+      select.disabled = revealed;
       select.addEventListener('change', function () {
         setDragResponse(question, target.id, select.value);
       });
 
       wrapper.append(span, select);
+      if (revealed) {
+        var correctOption = question.options.find(function (option) {
+          return option.id === target.correct;
+        });
+        var selectedOption = (state.responses[question.id] || {})[target.id];
+        var answer = document.createElement('p');
+        answer.className = 'correct';
+        answer.textContent = 'Correct answer: ' + correctOption.text;
+        wrapper.appendChild(answer);
+        if (selectedOption === target.correct) {
+          wrapper.classList.add('drop-correct');
+        } else if (selectedOption) {
+          wrapper.classList.add('drop-incorrect');
+        }
+      }
       targets.appendChild(wrapper);
     });
 

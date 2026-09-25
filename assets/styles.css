@@ -277,6 +277,14 @@ fieldset {
   text-align: left;
 }
 
+.drop-target.drop-correct {
+  border-color: var(--success);
+}
+
+.drop-target.drop-incorrect {
+  border-color: var(--danger);
+}
+
 .drop-target {
   display: grid;
   gap: 0.65rem;
