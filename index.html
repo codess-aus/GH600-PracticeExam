@@ -25,7 +25,7 @@
           <label class="field" for="mode">
             Practice mode
             <select id="mode">
-              <option id="timed-option">Timed exam</option>
+              <option id="timed-option" value="timed">Timed exam</option>
               <option value="learning">Learning mode</option>
             </select>
           </label>
@@ -53,6 +53,7 @@
           <span id="timer" class="badge"></span>
         </div>
         <article id="question-card" class="question-card"></article>
+        <div id="learning-feedback" class="answer-feedback" aria-live="polite"></div>
         <nav class="nav-row" aria-label="Question navigation">
           <button id="prev-question" class="secondary" type="button">Previous</button>
           <button id="next-question" class="secondary" type="button">Next</button>

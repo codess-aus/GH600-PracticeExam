@@ -31,6 +31,7 @@
     start: document.getElementById('start-exam'),
     restart: document.getElementById('restart-exam'),
     questionCard: document.getElementById('question-card'),
+    learningFeedback: document.getElementById('learning-feedback'),
     questionProgress: document.getElementById('question-progress'),
     timer: document.getElementById('timer'),
     prev: document.getElementById('prev-question'),
@@ -110,6 +111,7 @@
     var question = state.activeQuestions[state.currentIndex];
     els.questionProgress.textContent = 'Question ' + (state.currentIndex + 1) + ' of ' + state.activeQuestions.length;
     els.questionCard.innerHTML = '';
+    els.learningFeedback.innerHTML = '';
 
     var topic = document.createElement('p');
     topic.className = 'eyebrow';
@@ -203,10 +205,6 @@
     }
 
     var response = state.responses[question.id];
-    var feedback = document.createElement('div');
-    feedback.className = 'answer-feedback';
-    feedback.setAttribute('aria-live', 'polite');
-
     var result = document.createElement('p');
     if (!engine.hasResponse(question, response)) {
       result.className = 'neutral';
@@ -220,8 +218,7 @@
     }
     var explanation = document.createElement('p');
     explanation.textContent = question.explanation;
-    feedback.append(result, explanation);
-    els.questionCard.appendChild(feedback);
+    els.learningFeedback.append(result, explanation);
   }
 
   function renderDragDrop(question) {
@@ -289,7 +286,7 @@
         var selectedOption = (state.responses[question.id] || {})[target.id];
         var answer = document.createElement('p');
         answer.className = 'correct';
-        answer.textContent = 'Correct answer: ' + correctOption.text;
+        answer.textContent = 'Correct answer: ' + (correctOption ? correctOption.text : target.correct);
         wrapper.appendChild(answer);
         if (selectedOption === target.correct) {
           wrapper.classList.add('drop-correct');

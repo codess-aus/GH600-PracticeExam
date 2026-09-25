@@ -235,7 +235,7 @@ fieldset {
   text-align: left;
 }
 
-.answer-feedback {
+.answer-feedback:not(:empty) {
   margin-top: 1rem;
   border: 1px solid var(--border);
   border-radius: 0.85rem;
@@ -247,7 +247,7 @@ fieldset {
   margin-bottom: 0;
 }
 
-.neutral {
+.answer-feedback .neutral {
   color: var(--muted);
   font-weight: 800;
 }
