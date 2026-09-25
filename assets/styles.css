@@ -251,11 +251,7 @@ fieldset {
   margin-bottom: 0;
 }
 
-.answer-feedback .neutral {
-  color: var(--muted);
-  font-weight: 800;
-}
-
+.answer-feedback .neutral,
 .correct-answer {
   color: var(--muted);
   font-weight: 800;

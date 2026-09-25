@@ -14,6 +14,8 @@
     responses: {},
     // Tracks questions whose learning-mode feedback has been shown and locked.
     revealed: {},
+    // Captures the selected mode for the lifetime of the current session.
+    mode: TIMED_MODE,
     timerId: null,
     remainingSeconds: 0,
     finished: false
@@ -89,7 +91,7 @@
 
   // Returns whether the current session uses immediate learning feedback.
   function isLearningMode() {
-    return els.mode.value === LEARNING_MODE;
+    return state.mode === LEARNING_MODE;
   }
 
   function startExam() {
@@ -101,6 +103,7 @@
     state.currentIndex = 0;
     state.responses = {};
     state.revealed = {};
+    state.mode = els.mode.value;
     state.finished = false;
     showScreen('exam');
     startTimer();
